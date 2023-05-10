@@ -1,0 +1,89 @@
+{% load staticfiles %}
+{% include 'check_logstate.html' %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book.css' %}" />
+<div id="book_editDiv">
+	<form id="bookModifyForm" enctype="multipart/form-data"  method="post">
+        {% csrf_token %}
+		<div>
+			<span class="label">图书条形码:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_barcode_modify" name="book.barcode" value="{{ barcode }}" style="width:200px" />
+			</span>
+		</div>
+
+		<div>
+			<span class="label">图书名称:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_bookName_modify" name="book.bookName" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">图书所在类别:</span>
+			<span class="inputControl">
+				<input class="textbox"  id="book_bookTypeObj_bookTypeId_modify" name="book.bookTypeObj.bookTypeId" style="width: auto"/>
+			</span>
+		</div>
+		<div>
+			<span class="label">图书价格:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_price_modify" name="book.price" style="width:80px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">库存:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_count_modify" name="book.count" style="width:80px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">出版日期:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_publishDate_modify" name="book.publishDate" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">出版社:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_publish_modify" name="book.publish" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">图书图片:</span>
+			<span class="inputControl">
+				<img id="book_bookPhotoImgMod" width="200px" border="0px"/><br/>
+				<input id="book_bookPhotoMod" name="book.bookPhoto" type="file" size="50" />
+			</span>
+		</div>
+		<div>
+			<span class="label">图书简介:</span>
+			<span class="inputControl">
+				<textarea id="book_bookDesc_modify" name="book.bookDesc" type="text/plain"   style="width:750px;height:500px;"></textarea>
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">图书文件:</span>
+			<span class="inputControl">
+				<a id="book_bookFileModA" style="color:red;margin-bottom:5px;" target="_blank">查看</a>&nbsp;&nbsp;
+				<input id="book_bookFileMod" name="book.bookFile" value="重新选择文件" type="file" size="50" />
+			</span>
+		</div>
+		<div class="operation">
+			<a id="bookModifyButton" class="easyui-linkbutton">更新</a>
+		</div>
+	</form>
+</div>
+
+
+<script src="{% static 'js/Book/book_modify.js' %}"></script>

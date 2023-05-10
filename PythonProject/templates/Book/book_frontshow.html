@@ -1,0 +1,91 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1 , user-scalable=no">
+  <TITLE>查看图书详情</TITLE>
+  <link href="{% static 'plugins/bootstrap.css' %}" rel="stylesheet">
+  <link href="{% static 'plugins/bootstrap-dashen.css' %}" rel="stylesheet">
+  <link href="{% static 'plugins/font-awesome.css' %}" rel="stylesheet">
+  <link href="{% static 'plugins/animate.css' %}" rel="stylesheet">
+</head>
+<body style="margin-top:70px;">
+{% include 'header.html' %}
+<div class="container">
+	<ul class="breadcrumb">
+  		<li><a href="{% url 'Index:index' %}">首页</a></li>
+  		<li><a href="{% url 'Book:frontList' %}">图书信息</a></li>
+  		<li class="active">详情查看</li>
+	</ul>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">图书条形码:</div>
+		<div class="col-md-10 col-xs-6">{{ book.barcode }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">图书名称:</div>
+		<div class="col-md-10 col-xs-6">{{ book.bookName }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">图书所在类别:</div>
+		<div class="col-md-10 col-xs-6">{{ book.bookTypeObj.bookTypeName }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">图书价格:</div>
+		<div class="col-md-10 col-xs-6">{{ book.price }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">库存:</div>
+		<div class="col-md-10 col-xs-6">{{ book.count }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">出版日期:</div>
+		<div class="col-md-10 col-xs-6">{{ book.publishDate }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">出版社:</div>
+		<div class="col-md-10 col-xs-6">{{ book.publish }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">图书图片:</div>
+		<div class="col-md-10 col-xs-6"><img class="img-responsive" src="{{ book.bookPhoto.url }}"  border="0px"/></div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">图书简介:</div>
+		<div class="col-md-10 col-xs-6">{{ book.bookDesc | safe }}</div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4 text-right bold">图书文件:</div>
+		<div class="col-md-10 col-xs-6">
+            {% if book.bookFile == 'file/NoFile.jpg' %}
+            暂无文件
+            {% else %}
+            <a href="{{ book.bookFile.url }}" target="_blank"><script>document.write(decodeURIComponent('{{ book.bookFile.url }}'));</script></a>
+            {% endif %}
+
+        </div>
+	</div>
+	<div class="row bottom15">
+		<div class="col-md-2 col-xs-4"></div>
+		<div class="col-md-6 col-xs-6">
+			<button onclick="history.back();" class="btn btn-primary">返回</button>
+		</div>
+	</div>
+</div>
+{% include 'footer.html' %}
+<script src="{% static 'plugins/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap.js' %}"></script>
+<script src="{% static 'plugins/wow.min.js' %}"></script>
+<script>
+$(function(){
+        /*小屏幕导航点击关闭菜单*/
+        $('.navbar-collapse a').click(function(){
+            $('.navbar-collapse').collapse('hide');
+        });
+        new WOW().init();
+ })
+ </script>
+</body>
+</html>
+

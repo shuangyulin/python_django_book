@@ -1,0 +1,204 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1 , user-scalable=no">
+  <TITLE>修改图书信息</TITLE>
+  <link href="{% static 'plugins/bootstrap.css' %}" rel="stylesheet">
+  <link href="{% static 'plugins/bootstrap-dashen.css' %}" rel="stylesheet">
+  <link href="{% static 'plugins/font-awesome.css' %}" rel="stylesheet">
+  <link href="{% static 'plugins/animate.css' %}" rel="stylesheet">
+</head>
+<body style="margin-top:70px;">
+<div class="container">
+    {% include 'header.html' %}
+	<div class="col-md-9 wow fadeInLeft">
+	<ul class="breadcrumb">
+  		<li><a href="{% url 'Index:index' %}">首页</a></li>
+  		<li class="active">图书信息修改</li>
+	</ul>
+		<div class="row">
+      	<form class="form-horizontal" name="bookEditForm" id="bookEditForm" enctype="multipart/form-data" method="post"  class="mar_t15">
+            {% csrf_token %}
+		  <div class="form-group">
+			 <label for="book_barcode_edit" class="col-md-3 text-right">图书条形码:</label>
+			 <div class="col-md-9">
+			 	<input type="text" id="book_barcode_edit" name="book.barcode" class="form-control" placeholder="请输入图书条形码" readOnly>
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookName_edit" class="col-md-3 text-right">图书名称:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_bookName_edit" name="book.bookName" class="form-control" placeholder="请输入图书名称">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookTypeObj_bookTypeId_edit" class="col-md-3 text-right">图书所在类别:</label>
+		  	 <div class="col-md-9">
+			    <select id="book_bookTypeObj_bookTypeId_edit" name="book.bookTypeObj.bookTypeId" class="form-control">
+			    </select>
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_price_edit" class="col-md-3 text-right">图书价格:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_price_edit" name="book.price" class="form-control" placeholder="请输入图书价格">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_count_edit" class="col-md-3 text-right">库存:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_count_edit" name="book.count" class="form-control" placeholder="请输入库存">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_publishDate_edit" class="col-md-3 text-right">出版日期:</label>
+		  	 <div class="col-md-9">
+                <div class="input-group date book_publishDate_edit col-md-12" data-link-field="book_publishDate_edit" data-link-format="yyyy-mm-dd">
+                    <input class="form-control" id="book_publishDate_edit" name="book.publishDate" size="16" type="text" value="" placeholder="请选择出版日期" readonly>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_publish_edit" class="col-md-3 text-right">出版社:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_publish_edit" name="book.publish" class="form-control" placeholder="请输入出版社">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookPhoto_edit" class="col-md-3 text-right">图书图片:</label>
+		  	 <div class="col-md-9">
+			    <img  class="img-responsive" id="book_bookPhotoImg" border="0px"/><br/>
+			    <input id="book_bookPhoto" name="book.bookPhoto" type="file" size="50" />
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookDesc_edit" class="col-md-3 text-right">图书简介:</label>
+		  	 <div class="col-md-9">
+			    <textarea name="book.bookDesc" id="book_bookDesc_edit" type="text/plain"   style="width:100%;height:300px;"></textarea>
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookFile_edit" class="col-md-3 text-right">图书文件:</label>
+		  	 <div class="col-md-9">
+			    <a id="book_bookFileA" width="200px" border="0px" target="_blank"></a><br/>
+			    <input id="book.bookFile" name="book.bookFile" type="file" size="50" />
+		  	 </div>
+		  </div>
+			  <div class="form-group">
+			  	<span class="col-md-3""></span>
+			  	<span onclick="ajaxBookModify();" class="btn btn-primary bottom5 top5">修改</span>
+			  </div>
+		</form>
+	    <style>#bookEditForm .form-group {margin-bottom:5px;}  </style>
+      </div>
+   </div>
+</div>
+
+
+{% include 'footer.html' %}
+<script src="{% static 'plugins/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap.js' %}"></script>
+<script src="{% static 'plugins/wow.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'plugins/locales/bootstrap-datetimepicker.zh-CN.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jsdate.js' %}"></script>
+<script src="{% static 'tiny_mce/tiny_mce.js' %}"></script>
+<script>
+/*弹出修改图书界面并初始化数据*/
+ function ajaxModifyQuery(barcode) {
+	$.ajax({
+		url :  "/Book/update/" + barcode,
+		type : "get",
+		dataType: "json",
+		success : function (book, response, status) {
+			if (book) {
+				$("#book_barcode_edit").val(book.barcode);
+				$("#book_bookName_edit").val(book.bookName);
+				$.ajax({
+					url: "/BookType/listAll?csrfmiddlewaretoken=" + $('input[name="csrfmiddlewaretoken"]').val(),
+					type: "get",
+					success: function(bookTypes,response,status) {
+						$("#book_bookTypeObj_bookTypeId_edit").empty();
+						var html="";
+		        		$(bookTypes).each(function(i,bookType){
+		        			html += "<option value='" + bookType.bookTypeId + "'>" + bookType.bookTypeName + "</option>";
+		        		});
+		        		$("#book_bookTypeObj_bookTypeId_edit").html(html);
+		        		$("#book_bookTypeObj_bookTypeId_edit").val(book.bookTypeObjPri);
+					}
+				});
+				$("#book_price_edit").val(book.price);
+				$("#book_count_edit").val(book.count);
+				$("#book_publishDate_edit").val(book.publishDate);
+				$("#book_publish_edit").val(book.publish);
+				$("#book_bookPhotoImg").attr("src", book.bookPhoto);
+				tinyMCE.editors['book_bookDesc_edit'].setContent(book.bookDesc);
+				$("#book_bookFileA").text(decodeURIComponent(book.bookFile.substring(12)));
+				$("#book_bookFileA").attr("href", book.bookFile);
+			} else {
+				alert("获取信息失败！");
+			}
+		}
+	});
+}
+
+/*ajax方式提交图书信息表单给服务器端修改*/
+function ajaxBookModify() {
+    $("#book_bookDesc_edit").text(tinyMCE.editors['book_bookDesc_edit'].getContent());
+	$.ajax({
+		url :  "/Book/update/" + $("#book_barcode_edit").val(),
+		type : "post",
+		dataType: "json",
+		data: new FormData($("#bookEditForm")[0]),
+		success : function (obj, response, status) {
+            if(obj.success){
+                alert("信息修改成功！");
+                location.reload(true);
+                $("#bookQueryForm").submit();
+            }else{
+                alert(obj.message);
+            }
+		},
+		processData: false,
+		contentType: false,
+	});
+}
+
+$(function(){
+        /*小屏幕导航点击关闭菜单*/
+        $('.navbar-collapse a').click(function(){
+            $('.navbar-collapse').collapse('hide');
+        });
+        new WOW().init();
+    /*出版日期组件*/
+    $('.book_publishDate_edit').datetimepicker({
+    	language:  'zh-CN',  //语言
+    	format: 'yyyy-mm-dd',
+    	minView: 2,
+    	weekStart: 1,
+    	todayBtn:  1,
+    	autoclose: 1,
+    	minuteStep: 1,
+    	todayHighlight: 1,
+    	startView: 2,
+    	forceParse: 0
+    });
+
+    //实例化图书描述编辑器
+    tinyMCE.init({
+        selector: "#book_bookDesc_edit",
+        theme: 'advanced',
+        language: "zh",
+        strict_loading_mode: 1,
+    });
+    setTimeout(ajaxModifyQuery,100,"{{ barcode }}");
+ })
+ </script>
+</body>
+</html>
+

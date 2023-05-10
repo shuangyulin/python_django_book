@@ -1,0 +1,366 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1 , user-scalable=no">
+<title>图书查询</title>
+<link href="{% static 'plugins/bootstrap.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/bootstrap-dashen.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/font-awesome.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/animate.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+</head>
+<body style="margin-top:70px;">
+<div class="container">
+{% include 'header.html' %}
+
+    <div class="col-md-3 wow fadeInLeft">
+		<div class="page-header">
+    		<h1>图书查询</h1>
+		</div>
+		<form name="bookQueryForm" id="bookQueryForm" action="{% url 'Book:frontList' %}" class="mar_t15" method="post">
+			 {% csrf_token %}
+            <div class="form-group">
+				<label for="barcode">图书条形码:</label>
+				<input type="text" id="barcode" name="barcode" value="{{ barcode }}" class="form-control" placeholder="请输入图书条形码">
+			</div>
+			<div class="form-group">
+				<label for="bookName">图书名称:</label>
+				<input type="text" id="bookName" name="bookName" value="{{ bookName }}" class="form-control" placeholder="请输入图书名称">
+			</div>
+            <div class="form-group">
+            	<label for="bookTypeObj_bookTypeId">图书所在类别：</label>
+                <select id="bookTypeObj_bookTypeId" name="bookTypeObj.bookTypeId" class="form-control">
+                	<option value="0">不限制</option>
+                    {% for bookType in bookTypes %}
+                        {% if bookType.bookTypeId == bookTypeObj_bookTypeId %}
+                             <option value="{{ bookType.bookTypeId }}" selected>{{ bookType.bookTypeName }}</option>
+                        {% else %}
+                            <option value="{{ bookType.bookTypeId }}">{{ bookType.bookTypeName }}</option>
+                        {% endif %}
+	 				{% endfor %}
+ 			</select>
+            </div>
+			<div class="form-group">
+				<label for="publishDate">出版日期:</label>
+				<input type="text" id="publishDate" name="publishDate" class="form-control"  placeholder="请选择出版日期" value="{{ publishDate }}" onclick="SelectDate(this,'yyyy-MM-dd')" />
+			</div>
+            <input type=hidden name=currentPage value="{{ currentPage }}" />
+            <button type="submit" class="btn btn-primary">查询</button>
+        </form>
+	</div>
+
+	<div class="col-md-9 wow fadeInRight">
+		<ul class="breadcrumb">
+  			<li><a href="{% url 'Index:index' %}">首页</a></li>
+  			<li><a href="{% url 'Book:frontList' %}">图书信息列表</a></li>
+  			<li class="active">查询结果显示</li>
+  			<a class="pull-right" href="{% url 'Book:frontAdd' %}" style="display:inline;">添加图书</a>
+		</ul>
+		<div class="row">
+            {% for book in books_page %}
+                {% if forloop.counter|add:-1|divisibleby:4 %}
+			<div class="col-md-3 bottom15" style="clear: left;">
+                {% else %}
+            <div class="col-md-3 bottom15">
+                {% endif %}
+			  <a  href="{% url 'Book:frontShow' book.barcode %}"><img class="img-responsive" src="{{ book.bookPhoto.url }}" /></a>
+			     <div class="showFields">
+			     	<div class="field">
+	            		图书条形码:{{ book.barcode }}
+			     	</div>
+			     	<div class="field">
+	            		图书名称:{{ book.bookName }}
+			     	</div>
+			     	<div class="field">
+	            		图书所在类别:{{ book.bookTypeObj.bookTypeName }}
+			     	</div>
+			     	<div class="field">
+	            		图书价格:{{ book.price }}
+			     	</div>
+			     	<div class="field">
+	            		库存:{{ book.count }}
+			     	</div>
+			     	<div class="field">
+	            		出版日期:{{ book.publishDate }}
+			     	</div>
+			     	<div class="field">
+	            		出版社:{{ book.publish }}
+			     	</div>
+			     	<div class="field">
+	            		图书文件:
+                        {%  if book.bookFile == 'file/NoFile.jpg' %}
+                            暂无文件
+                        {% else %}
+                            <a href='{{book.bookFile.url }}' target='_blank'>{{ book.bookFile }}</a>
+                        {% endif %}
+			     	</div>
+			        <a class="btn btn-primary top5" href="{% url 'Book:frontShow' book.barcode  %}">详情</a>
+			        <a class="btn btn-primary top5" onclick="bookEdit('{{ book.barcode }}');">修改</a>
+			        <a class="btn btn-primary top5" onclick="bookDelete('{{ book.barcode }}');" >删除</a>
+			     </div>
+			</div>
+			{% endfor %}
+
+			<div class="row">
+				<div class="col-md-12">
+					<nav class="pull-left">
+						<ul class="pagination">
+							<li><a href="#" onclick="GoToPage({{ currentPage|add:-1 }},{{ totalPage }});" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+							{% for page in pageList %}
+                                            {% if currentPage == page %}
+						                        <li class="active"><a href="#"  onclick="GoToPage({{ page }},{{ totalPage }});">{{ page }}</a></li>
+						                    {% else %}
+                                                <li><a href="#"  onclick="GoToPage({{ page }},{{ totalPage }});">{{ page }}</a></li>
+                                            {% endif %}
+                                            {% endfor %}
+						                    <li><a href="#" onclick="GoToPage({{ currentPage|add:1 }},{{ totalPage }});"><span aria-hidden="true">&raquo;</span></a></li>
+                        </ul>
+
+					</nav>
+					<div class="pull-right" style="line-height:75px;" >共有{{ recordNumber }}条记录，当前第{{ currentPage }}/{{ totalPage }} 页</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+		</div>
+</div>
+<div id="bookEditDialog" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" style="width:900px;" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><i class="fa fa-edit"></i>&nbsp;图书信息编辑</h4>
+      </div>
+      <div class="modal-body" style="height:450px; overflow: scroll;">
+      	<form class="form-horizontal" name="bookEditForm" id="bookEditForm" enctype="multipart/form-data" method="post"  class="mar_t15">
+		    {% csrf_token %}
+            <div class="form-group">
+			 <label for="book_barcode_edit" class="col-md-3 text-right">图书条形码:</label>
+			 <div class="col-md-9">
+			 	<input type="text" id="book_barcode_edit" name="book.barcode" class="form-control" placeholder="请输入图书条形码" readOnly>
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookName_edit" class="col-md-3 text-right">图书名称:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_bookName_edit" name="book.bookName" class="form-control" placeholder="请输入图书名称">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookTypeObj_bookTypeId_edit" class="col-md-3 text-right">图书所在类别:</label>
+		  	 <div class="col-md-9">
+			    <select id="book_bookTypeObj_bookTypeId_edit" name="book.bookTypeObj.bookTypeId" class="form-control">
+                    {% for bookType in bookTypes %}
+                        <option value="{{ bookType.bookTypeId }}">{{ bookType.bookTypeName }}</option>
+                    {% endfor %}
+			    </select>
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_price_edit" class="col-md-3 text-right">图书价格:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_price_edit" name="book.price" class="form-control" placeholder="请输入图书价格">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_count_edit" class="col-md-3 text-right">库存:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_count_edit" name="book.count" class="form-control" placeholder="请输入库存">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_publishDate_edit" class="col-md-3 text-right">出版日期:</label>
+		  	 <div class="col-md-9">
+                <div class="input-group date book_publishDate_edit col-md-12" data-link-field="book_publishDate_edit" data-link-format="yyyy-mm-dd">
+                    <input class="form-control" id="book_publishDate_edit" name="book.publishDate" size="16" type="text" value="" placeholder="请选择出版日期" readonly>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_publish_edit" class="col-md-3 text-right">出版社:</label>
+		  	 <div class="col-md-9">
+			    <input type="text" id="book_publish_edit" name="book.publish" class="form-control" placeholder="请输入出版社">
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookPhoto_edit" class="col-md-3 text-right">图书图片:</label>
+		  	 <div class="col-md-9">
+			    <img  class="img-responsive" id="book_bookPhotoImg" border="0px"/><br/>
+			    <input id="book_bookPhoto" name="book.bookPhoto" type="file" size="50" />
+		  	 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookDesc_edit" class="col-md-3 text-right">图书简介:</label>
+		  	 <div class="col-md-9">
+			 	<textarea name="book.bookDesc" id="book_bookDesc_edit" style="width:100%;height:400px;"></textarea>
+			 </div>
+		  </div>
+		  <div class="form-group">
+		  	 <label for="book_bookFile_edit" class="col-md-3 text-right">图书文件:</label>
+		  	 <div class="col-md-9">
+			    <a id="book_bookFileA" target="_blank"></a><br/>
+			    <input id="book_bookFile" name="book.bookFile" type="file" size="50" />
+		  	 </div>
+		  </div>
+		</form>
+	    <style>#bookEditForm .form-group {margin-bottom:5px;}  </style>
+      </div>
+      <div class="modal-footer">
+      	<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      	<button type="button" class="btn btn-primary" onclick="ajaxBookModify();">提交</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% include 'footer.html' %}
+<script src="{% static 'plugins/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap.js' %}"></script>
+<script src="{% static 'plugins/wow.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-datetimepicker.min.js' %}"></script>
+<script src="{% static 'plugins/locales/bootstrap-datetimepicker.zh-CN.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jsdate.js' %}"></script>
+<script src="{% static 'tiny_mce/tiny_mce.js' %}"></script>
+<script>
+//实例化图书描述编辑器
+    tinyMCE.init({
+        selector: "#book_bookDesc_edit",
+        theme: 'advanced',
+        language: "zh",
+        strict_loading_mode: 1,
+    });
+
+/*跳转到查询结果的某页*/
+function GoToPage(currentPage,totalPage) {
+    if(currentPage==0) return;
+    if(currentPage>totalPage) return;
+    document.bookQueryForm.currentPage.value = currentPage;
+    document.bookQueryForm.submit();
+}
+
+/*可以直接跳转到某页*/
+function changepage(totalPage)
+{
+    var pageValue=document.bookQueryForm.pageValue.value;
+    if(pageValue>totalPage) {
+        alert('你输入的页码超出了总页数!');
+        return ;
+    }
+    document.bookQueryForm.currentPage.value = pageValue;
+    documentbookQueryForm.submit();
+}
+
+/*弹出修改图书界面并初始化数据*/
+function bookEdit(barcode) {
+	$.ajax({
+		url :  '/Book/update/' + barcode,
+		type : "get",
+		dataType: "json",
+		success : function (book, response, status) {
+			if (book) {
+				$("#book_barcode_edit").val(book.barcode);
+				$("#book_bookName_edit").val(book.bookName);
+				$.ajax({
+					url: "{% url 'BookType:listAll' %}",
+					type: "get",
+					success: function(bookTypes,response,status) {
+						$("#book_bookTypeObj_bookTypeId_edit").empty();
+						var html="";
+		        		$(bookTypes).each(function(i,bookType){
+		        			html += "<option value='" + bookType.bookTypeId + "'>" + bookType.bookTypeName + "</option>";
+		        		});
+		        		$("#book_bookTypeObj_bookTypeId_edit").html(html);
+		        		$("#book_bookTypeObj_bookTypeId_edit").val(book.bookTypeObjPri);
+					}
+				});
+				$("#book_price_edit").val(book.price);
+				$("#book_count_edit").val(book.count);
+				$("#book_publishDate_edit").val(book.publishDate);
+				$("#book_publish_edit").val(book.publish);
+				$("#book_bookPhotoImg").attr("src", book.bookPhoto);
+                tinyMCE.editors['book_bookDesc_edit'].setContent(book.bookDesc);
+				$("#book_bookFileA").text(decodeURIComponent(book.bookFile));
+				$("#book_bookFileA").attr("href", book.bookFile);
+				$('#bookEditDialog').modal('show');
+			} else {
+				alert("获取信息失败！");
+			}
+		}
+	});
+}
+
+/*删除图书信息*/
+function bookDelete(barcode) {
+    var csrf = $('input[name="csrfmiddlewaretoken"]').val();
+	if(confirm("确认删除这个记录")) {
+		$.ajax({
+			type : "POST",
+			url : "/Book/deletes",
+			data : {
+				"barcodes" : barcode,
+                "csrfmiddlewaretoken": csrf
+			},
+			success : function (obj) {
+				if (obj.success) {
+					alert("删除成功");
+					$("#bookQueryForm").submit();
+					//location.href= basePath + "Book/frontlist";
+				}
+				else
+					alert(obj.message);
+			},
+		});
+	}
+}
+
+/*ajax方式提交图书信息表单给服务器端修改*/
+function ajaxBookModify() {
+    $("#book_bookDesc_edit").text(tinyMCE.editors['book_bookDesc_edit'].getContent());
+	$.ajax({
+		url :   '/Book/update/' + $("#book_barcode_edit").val(),
+		type : "post",
+		dataType: "json",
+		data: new FormData($("#bookEditForm")[0]),
+		success : function (obj, response, status) {
+            if(obj.success){
+                alert("信息修改成功！");
+                $("#bookQueryForm").submit();
+            }else{
+                alert(obj.message);
+            }
+		},
+		processData: false,
+		contentType: false,
+	});
+}
+
+$(function(){
+	/*小屏幕导航点击关闭菜单*/
+    $('.navbar-collapse a').click(function(){
+        $('.navbar-collapse').collapse('hide');
+    });
+    new WOW().init();
+
+    /*出版日期组件*/
+    $('.book_publishDate_edit').datetimepicker({
+    	language:  'zh-CN',  //语言
+    	format: 'yyyy-mm-dd',
+    	minView: 2,
+    	weekStart: 1,
+    	todayBtn:  1,
+    	autoclose: 1,
+    	minuteStep: 1,
+    	todayHighlight: 1,
+    	startView: 2,
+    	forceParse: 0
+    });
+})
+</script>
+</body>
+</html>
+

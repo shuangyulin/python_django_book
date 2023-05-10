@@ -1,0 +1,90 @@
+{% include 'check_logstate.html' %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/book.css' %}" />
+<div id="bookAddDiv">
+	<form id="bookAddForm" enctype="multipart/form-data"  method="post">
+        {% csrf_token %}
+		<div>
+			<span class="label">图书条形码:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_barcode" name="book.barcode" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">图书名称:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_bookName" name="book.bookName" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">图书所在类别:</span>
+			<span class="inputControl">
+                <select id="book_bookTypeObj_bookTypeId" name="book.bookTypeObj.bookTypeId" style="width:200px;height:25px;">
+                    {% for bookType in bookTypes %}
+                    <option value="{{ bookType.bookTypeId }}">{{ bookType.bookTypeName }}</option>
+                    {% endfor %}
+                </select>
+            </span>
+		</div>
+		<div>
+			<span class="label">图书价格:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_price" name="book.price" style="width:80px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">库存:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_count" name="book.count" style="width:80px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">出版日期:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_publishDate" name="book.publishDate" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">出版社:</span>
+			<span class="inputControl">
+				<input class="textbox" type="text" id="book_publish" name="book.publish" style="width:200px" />
+
+			</span>
+
+		</div>
+		<div>
+			<span class="label">图书图片:</span>
+			<span class="inputControl">
+				<input id="book_bookPhoto" name="book.bookPhoto" type="file" size="50" />
+			</span>
+		</div>
+		<div>
+			<span class="label">图书简介:</span>
+			<span class="inputControl">
+				<textarea name="book.bookDesc" id="book_bookDesc" type="text/plain"   style="width:750px;height:500px;"></textarea>
+			</span>
+
+		</div>
+		<div>
+			<span class="label">图书文件:</span>
+			<span class="inputControl">
+				<input id="book_bookFile" name="book.bookFile" type="file" size="50" />
+			</span>
+		</div>
+		<div class="operation">
+			<a id="bookAddButton" class="easyui-linkbutton">添加</a>
+			<a id="bookClearButton" class="easyui-linkbutton">重填</a>
+		</div>
+	</form>
+</div>
+<script src="{% static 'js/Book/book_add.js' %}"></script>
